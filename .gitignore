@@ -1,0 +1,23 @@
+# Dependências
+node_modules/
+
+# Builds
+dist/
+build/
+
+# Variáveis de ambiente (nunca versionar credenciais)
+.env
+.env.local
+
+# Logs
+*.log
+
+# Cobertura de testes
+coverage/
+
+# Arquivos de sistema operacional
+.DS_Store
+
+# Configurações de editor/IDE
+.vscode/
+.idea/
