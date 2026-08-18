@@ -10,6 +10,7 @@ export default function App() {
   const [erroLista, setErroLista] = useState(null);
   const [emEdicao, setEmEdicao] = useState(null);
   const [paraExcluir, setParaExcluir] = useState(null);
+  const [idCarregando, setIdCarregando] = useState(null);
   const [feedback, setFeedback] = useState(null);
 
   const carregar = useCallback(async () => {
@@ -38,17 +39,26 @@ export default function App() {
     if (emEdicao) {
       await api.atualizar(emEdicao.id, dados);
       setEmEdicao(null);
-      setFeedback('Usuário atualizado.');
+      setFeedback({ texto: 'Usuário atualizado.', tipo: 'sucesso' });
     } else {
       await api.criar(dados);
-      setFeedback('Usuário cadastrado.');
+      setFeedback({ texto: 'Usuário cadastrado.', tipo: 'sucesso' });
     }
     await carregar();
   }
 
-  function editar(usuario) {
-    setEmEdicao(usuario);
-    window.scrollTo({ top: 0 });
+  async function editar(usuario) {
+    setIdCarregando(usuario.id);
+    try {
+      // rebusca na API porque a linha da lista pode estar defasada em relação ao banco
+      setEmEdicao(await api.buscarPorId(usuario.id));
+      window.scrollTo({ top: 0 });
+    } catch (erro) {
+      setFeedback({ texto: erro.message, tipo: 'erro' });
+      await carregar();
+    } finally {
+      setIdCarregando(null);
+    }
   }
 
   async function confirmarExclusao() {
@@ -57,7 +67,7 @@ export default function App() {
     try {
       await api.remover(alvo.id);
       if (emEdicao?.id === alvo.id) setEmEdicao(null);
-      setFeedback('Usuário excluído.');
+      setFeedback({ texto: 'Usuário excluído.', tipo: 'sucesso' });
       await carregar();
     } catch (erro) {
       setErroLista(erro.message);
@@ -71,7 +81,11 @@ export default function App() {
         <p>Gerenciamento de usuários do sistema.</p>
       </header>
 
-      {feedback && <p className="feedback">{feedback}</p>}
+      {feedback && (
+        <p className={feedback.tipo === 'erro' ? 'feedback feedback-erro' : 'feedback'}>
+          {feedback.texto}
+        </p>
+      )}
 
       <FormularioUsuario usuario={emEdicao} onSalvar={salvar} onCancelar={() => setEmEdicao(null)} />
 
@@ -90,7 +104,12 @@ export default function App() {
         )}
 
         {!carregando && !erroLista && (
-          <ListaUsuarios usuarios={usuarios} onEditar={editar} onExcluir={setParaExcluir} />
+          <ListaUsuarios
+            usuarios={usuarios}
+            idCarregando={idCarregando}
+            onEditar={editar}
+            onExcluir={setParaExcluir}
+          />
         )}
       </section>
 

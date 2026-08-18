@@ -1,10 +1,9 @@
 const BASE = `${import.meta.env.VITE_API_URL}/usuarios`;
 
 class ErroApi extends Error {
-  constructor(mensagem, status, detalhes) {
+  constructor(mensagem, detalhes) {
     super(mensagem);
     this.name = 'ErroApi';
-    this.status = status;
     this.detalhes = detalhes ?? [];
   }
 }
@@ -18,7 +17,7 @@ async function requisitar(caminho = '', opcoes = {}) {
     });
   } catch {
     // fetch só rejeita quando a requisição nem chegou ao servidor; erro de HTTP vem abaixo
-    throw new ErroApi('Não foi possível comunicar com o servidor.', 0);
+    throw new ErroApi('Não foi possível comunicar com o servidor.');
   }
 
   if (resposta.status === 204) {
@@ -27,11 +26,7 @@ async function requisitar(caminho = '', opcoes = {}) {
 
   const corpo = await resposta.json().catch(() => null);
   if (!resposta.ok) {
-    throw new ErroApi(
-      corpo?.erro?.mensagem ?? 'Erro inesperado no servidor.',
-      resposta.status,
-      corpo?.erro?.detalhes
-    );
+    throw new ErroApi(corpo?.erro?.mensagem ?? 'Erro inesperado no servidor.', corpo?.erro?.detalhes);
   }
   return corpo;
 }

@@ -1,6 +1,6 @@
 import { formatarData, mascararCpf, mascararTelefone } from '../utils/mascaras.js';
 
-export default function ListaUsuarios({ usuarios, onEditar, onExcluir }) {
+export default function ListaUsuarios({ usuarios, idCarregando, onEditar, onExcluir }) {
   if (usuarios.length === 0) {
     return <p className="estado-vazio">Nenhum usuário cadastrado até o momento.</p>;
   }
@@ -30,7 +30,12 @@ export default function ListaUsuarios({ usuarios, onEditar, onExcluir }) {
               <td data-rotulo="Nascimento">{formatarData(usuario.data_nascimento)}</td>
               <td data-rotulo="Cadastro">{formatarData(usuario.data_cadastro)}</td>
               <td className="celula-acoes">
-                <button type="button" className="botao" onClick={() => onEditar(usuario)}>
+                <button
+                  type="button"
+                  className="botao"
+                  disabled={usuario.id === idCarregando}
+                  onClick={() => onEditar(usuario)}
+                >
                   Editar
                 </button>
                 <button type="button" className="botao botao-perigo" onClick={() => onExcluir(usuario)}>

@@ -1,13 +1,9 @@
 import AppError from '../errors/AppError.js';
 
-function respostaDuplicidade(erro) {
-  if (erro.message.includes('uk_usuarios_cpf')) {
-    return 'CPF já cadastrado';
-  }
-  if (erro.message.includes('uk_usuarios_email')) {
-    return 'Email já cadastrado';
-  }
-  return 'Email ou CPF já cadastrado';
+function conflitoDuplicidade(erro) {
+  const campo = erro.message.includes('uk_usuarios_cpf') ? 'cpf' : 'email';
+  const mensagem = campo === 'cpf' ? 'CPF já cadastrado' : 'Email já cadastrado';
+  return { mensagem, detalhes: [{ campo, mensagem }] };
 }
 
 export default function errorHandler(erro, req, res, next) {
@@ -20,7 +16,7 @@ export default function errorHandler(erro, req, res, next) {
   }
 
   if (erro.code === 'ER_DUP_ENTRY') {
-    return res.status(409).json({ erro: { mensagem: respostaDuplicidade(erro) } });
+    return res.status(409).json({ erro: conflitoDuplicidade(erro) });
   }
 
   if (erro.type === 'entity.parse.failed') {

@@ -23,6 +23,13 @@
   color: var(--cor-sucesso);
 }
 
+.feedback-erro {
+  border-color: #e3bbb7;
+  border-left-color: var(--cor-perigo);
+  background-color: #fbf0ef;
+  color: var(--cor-perigo);
+}
+
 .formulario,
 .secao-lista {
   background-color: var(--cor-superficie);
@@ -174,7 +181,15 @@
   text-align: left;
   padding: var(--esp-3);
   border-bottom: 1px solid var(--cor-borda);
-  white-space: nowrap;
+}
+
+@media (min-width: 769px) {
+  .tabela td[data-rotulo="CPF"],
+  .tabela td[data-rotulo="Telefone"],
+  .tabela td[data-rotulo="Nascimento"],
+  .tabela td[data-rotulo="Cadastro"] {
+    white-space: nowrap;
+  }
 }
 
 .tabela th {
@@ -191,6 +206,7 @@
 .celula-acoes {
   display: flex;
   gap: var(--esp-2);
+  white-space: nowrap;
 }
 
 .cortina {

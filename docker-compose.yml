@@ -1,0 +1,23 @@
+services:
+  banco:
+    image: mysql:8
+    container_name: mysql-crud
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: crud_usuarios
+    ports:
+      - "3307:3306"
+    volumes:
+      - dados-mysql:/var/lib/mysql
+      # os .sql desta pasta rodam em ordem alfabética na primeira subida: 01_schema, depois 02_seed
+      - ./database:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+
+volumes:
+  dados-mysql:

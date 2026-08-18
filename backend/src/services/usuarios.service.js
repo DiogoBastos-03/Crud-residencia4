@@ -2,15 +2,19 @@ import AppError from '../errors/AppError.js';
 import * as repositorio from '../repositories/usuarios.repository.js';
 import { validarUsuario } from '../validators/usuario.validator.js';
 
+function conflito(campo, mensagem) {
+  return new AppError(mensagem, 409, [{ campo, mensagem }]);
+}
+
 async function garantirUnicidade(usuario, idIgnorado = null) {
   const comMesmoEmail = await repositorio.buscarPorEmail(usuario.email);
   if (comMesmoEmail && comMesmoEmail.id !== idIgnorado) {
-    throw new AppError('Email já cadastrado', 409);
+    throw conflito('email', 'Email já cadastrado');
   }
 
   const comMesmoCpf = await repositorio.buscarPorCpf(usuario.cpf);
   if (comMesmoCpf && comMesmoCpf.id !== idIgnorado) {
-    throw new AppError('CPF já cadastrado', 409);
+    throw conflito('cpf', 'CPF já cadastrado');
   }
 }
 

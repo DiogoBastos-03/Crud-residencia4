@@ -97,9 +97,6 @@ export default function FormularioUsuario({ usuario, onSalvar, onCancelar }) {
           porCampo[item.campo] = item.mensagem;
         });
         setErros(porCampo);
-      } else if (erro.status === 409) {
-        // o 409 vem sem detalhes: a colisão só pode ser em email ou cpf, os dois campos únicos
-        setErros({ [erro.message.startsWith('CPF') ? 'cpf' : 'email']: erro.message });
       } else {
         setErroGeral(erro.message);
       }
